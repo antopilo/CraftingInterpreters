@@ -86,6 +86,71 @@ char Scanner::Peek() const
 	return _source.at(_current);
 }
 
+char Scanner::PeekNext() const
+{
+	if (_current + 1 >= _source.size())
+	{
+		return '\0';
+	}
+
+	return _source.at(_current + 1);
+}
+
+bool Scanner::IsDigit(char c) const
+{
+	return c >= '0' && c <= '9';
+}
+
+void Scanner::String()
+{
+	while (Peek() != '"' && !IsAtEnd())
+	{
+		if (Peek() == '\n')
+		{
+			_line++;
+		}
+		Advance();
+	}
+
+	if (IsAtEnd())
+	{
+		Lox::Error(_line, "Unterminated string.");
+		return;
+	}
+
+	// The closing ".
+	Advance();
+
+	// Trim the surrounding quotes.
+	uint32_t trimStart = _start + 1;
+	uint32_t trimEnd = _current - _start - 2;
+	std::string value = _source.substr(trimStart, trimEnd);
+	AddToken(TokenType::STRING, value);
+}
+
+void Scanner::Number()
+{
+	while (IsDigit(Peek()))
+	{
+		Advance();
+	}
+
+	if (Peek() == '.' && IsDigit(PeekNext()))
+	{
+		// Consume the "."
+		Advance();
+
+		while (IsDigit(Peek()))
+		{
+			Advance();
+		}
+	}
+
+	std::string literalString = _source.substr(_start, _current - _start);
+	double literal = atof(literalString.c_str());
+	AddToken(TokenType::NUMBER, literal);
+}
+
 void Scanner::ScanToken()
 {
 	char c = Advance();
@@ -129,7 +194,19 @@ void Scanner::ScanToken()
 			_line++;
 			break;
 
-		default: Lox::Error(_line, "Unexpected character."); break;
+		case '"': String(); break;
+		default: 
+		{
+			if (IsDigit(c))
+			{
+				Number();
+			}
+			else
+			{
+				Lox::Error(_line, "Unexpected character.");
+			}
+			break;
+		}
 	}
 }
 

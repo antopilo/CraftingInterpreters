@@ -43,6 +43,11 @@ private:
 	bool IsAtEnd() const;
 	bool Match(char expected);
 	char Peek() const;
+	char PeekNext() const;
+
+	bool IsDigit(char c) const;
+	void String();
+	void Number();
 
 	char Advance();
 	void AddToken(TokenType type);
