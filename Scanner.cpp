@@ -60,6 +60,32 @@ bool Scanner::IsAtEnd() const
 	return _current >= _source.size();
 }
 
+bool Scanner::Match(char expected)
+{
+	if (IsAtEnd())
+	{
+		return false;
+	}
+
+	if (_source.at(_current) != expected)
+	{
+		return false;
+	}
+
+	_current++;
+	return true;
+}
+
+char Scanner::Peek() const
+{
+	if (IsAtEnd())
+	{
+		return '\0';
+	}
+
+	return _source.at(_current);
+}
+
 void Scanner::ScanToken()
 {
 	char c = Advance();
@@ -75,6 +101,34 @@ void Scanner::ScanToken()
 		case '+': AddToken(TokenType::PLUS); break;
 		case ';': AddToken(TokenType::SEMICOLON); break;
 		case '*': AddToken(TokenType::STAR); break;
+		case '!': AddToken(Match('=') ? TokenType::BANG_EQUAL : TokenType::EQUAL);
+		case '=': AddToken(Match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL);
+		case '>': AddToken(Match('=') ? TokenType::LESS_EQUAL : TokenType::LESS);
+		case '<': AddToken(Match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
+		case '/':
+		{
+			if (Match('/'))
+			{
+				// A comment goes until the end of the line.
+				while (Peek() != '\n' && !IsAtEnd())
+				{
+					Advance();
+				}
+			}
+			else
+			{
+				AddToken(TokenType::SLASH);
+			}
+			break;
+		}
+		case ' ':
+		case '\r':
+		case '\t':
+			break;
+		case '\n':
+			_line++;
+			break;
+
 		default: Lox::Error(_line, "Unexpected character."); break;
 	}
 }

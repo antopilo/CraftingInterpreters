@@ -41,6 +41,8 @@ public:
 
 private:
 	bool IsAtEnd() const;
+	bool Match(char expected);
+	char Peek() const;
 
 	char Advance();
 	void AddToken(TokenType type);

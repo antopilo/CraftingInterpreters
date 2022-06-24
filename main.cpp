@@ -44,7 +44,7 @@ void RunPrompt()
 	for (;;)
 	{
 		std::cout << "> ";
-		std::cin >> input;
+		std::getline(std::cin, input);
 
 		if (input == "")
 		{
