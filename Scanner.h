@@ -1,6 +1,7 @@
 #pragma once
 #include "TokenType.h"
 
+#include <map>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -29,6 +30,7 @@ class Scanner
 private:
 	std::string _source;
 	std::vector<Token> _tokens;
+	std::map<std::string, TokenType> _keywords;
 
 	uint32_t _start = 0;
 	uint32_t _current = 0;
@@ -45,9 +47,13 @@ private:
 	char Peek() const;
 	char PeekNext() const;
 
+	bool IsAlpha(char c) const;
+	bool IsAlphaNumeric(char c) const;
 	bool IsDigit(char c) const;
+
 	void String();
 	void Number();
+	void Identifier();
 
 	char Advance();
 	void AddToken(TokenType type);

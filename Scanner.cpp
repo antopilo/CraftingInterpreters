@@ -40,6 +40,24 @@ Scanner::Scanner(const std::string& source)
 {
 	_source = source;
 	_tokens = std::vector<Token>();
+
+	_keywords = std::map<std::string, TokenType>();
+	_keywords["and"] = TokenType::AND;
+	_keywords["class"] = TokenType::CLASS;
+	_keywords["else"] = TokenType::ELSE;
+	_keywords["false"] = TokenType::FALSE;
+	_keywords["for"] = TokenType::FOR;
+	_keywords["fun"] = TokenType::FUN;
+	_keywords["if"] = TokenType::IF;
+	_keywords["nil"] = TokenType::NIL;
+	_keywords["or"] = TokenType::OR;
+	_keywords["print"] = TokenType::PRINT;
+	_keywords["return"] = TokenType::RETURN;
+	_keywords["super"] = TokenType::SUPER;
+	_keywords["this"] = TokenType::THIS;
+	_keywords["true"] = TokenType::TRUE;
+	_keywords["var"] = TokenType::VAR;
+	_keywords["while"] = TokenType::WHILE;
 }
 
 std::vector<Token> Scanner::ScanTokens()
@@ -50,7 +68,7 @@ std::vector<Token> Scanner::ScanTokens()
 		ScanToken();
 	}
 
-	Token token = Token(TokenType::TokenEOF, std::string(""), _line);
+	Token token = Token(TokenType::TokenEOF, "", _line);
 	_tokens.push_back(token);
 	return _tokens;
 }
@@ -94,6 +112,18 @@ char Scanner::PeekNext() const
 	}
 
 	return _source.at(_current + 1);
+}
+
+bool Scanner::IsAlpha(char c) const
+{
+	return (c >= 'a' && c <= 'z') ||
+		   (c >= 'A' && c <= 'Z') ||
+		   c == '_';
+}
+
+bool Scanner::IsAlphaNumeric(char c) const
+{
+	return IsAlpha(c) || IsDigit(c);
 }
 
 bool Scanner::IsDigit(char c) const
@@ -151,6 +181,27 @@ void Scanner::Number()
 	AddToken(TokenType::NUMBER, literal);
 }
 
+void Scanner::Identifier()
+{
+	while (IsAlphaNumeric(Peek()))
+	{
+		Advance();
+	}
+
+	TokenType type;
+	std::string text = _source.substr(_start, _current - _start);
+	if (_keywords.find(text) == _keywords.end())
+	{
+		type = TokenType::IDENTIFIER;
+	}
+	else
+	{
+		type = _keywords[text];
+	}
+
+	AddToken(type);
+}
+
 void Scanner::ScanToken()
 {
 	char c = Advance();
@@ -200,6 +251,10 @@ void Scanner::ScanToken()
 			if (IsDigit(c))
 			{
 				Number();
+			}
+			else if (IsAlpha(c))
+			{
+				Identifier();
 			}
 			else
 			{
