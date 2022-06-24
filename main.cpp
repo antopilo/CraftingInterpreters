@@ -10,7 +10,7 @@ void Run(const std::string& source)
 	Scanner scanner = Scanner(source);
 	std::vector<Token> tokens = scanner.ScanTokens();
 
-	for (Token& token : tokens)
+	for (const Token& token : tokens)
 	{
 		std::cout << token.ToString() << std::endl;
 	}
