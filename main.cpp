@@ -1,20 +1,9 @@
+#include "Lox.h"
 #include "Scanner.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
-
-bool HadError = false;
-void Report(uint32_t line, const std::string& where, const std::string& message)
-{
-	std::cout << "[line " << line << "] Error" << where << ": " << message << std::endl;
-	HadError = true;
-}
-
-void Error(uint32_t line, const std::string& message)
-{
-	Report(line, "", message);
-}
 
 void Run(const std::string& source)
 {
@@ -63,7 +52,7 @@ void RunPrompt()
 		}
 
 		Run(input);
-		HadError = false;
+		Lox::HadError = false;
 	}
 }
 
@@ -78,7 +67,7 @@ int main(int argc, char *argv[])
 	{
 		RunFile(argv[1]);
 		
-		if(HadError)
+		if(Lox::HadError)
 		{
 			return 65;
 		}

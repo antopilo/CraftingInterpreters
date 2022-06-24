@@ -1,4 +1,5 @@
 #include "Scanner.h"
+#include "Lox.h"
 
 Token::Token(TokenType type, const std::string& lexeme, uint32_t line)
 {
@@ -73,7 +74,8 @@ void Scanner::ScanToken()
 		case '-': AddToken(TokenType::MINUS); break;
 		case '+': AddToken(TokenType::PLUS); break;
 		case ';': AddToken(TokenType::SEMICOLON); break;
-		case '*': AddToken(TokenType::STAR); break; 
+		case '*': AddToken(TokenType::STAR); break;
+		default: Lox::Error(_line, "Unexpected character."); break;
 	}
 }
 
