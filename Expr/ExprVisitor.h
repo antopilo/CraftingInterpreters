@@ -1,13 +1,13 @@
 #pragma once
 
-class AssignExpr;
-class BinaryExpr;
-class CallExpr;
-class GroupingExpr;
-class LogicalExpr;
-class LiteralExpr;
-class UnaryExpr;
-class VarExpr;
+class Assign;
+class Binary;
+class Call;
+class Grouping;
+class Logical;
+class Literal;
+class Unary;
+class Var;
 
 template<typename R>
 class ExprVisitor
@@ -15,12 +15,12 @@ class ExprVisitor
 public:
 	~ExprVisitor() = default;
 
-	virtual R VisitAssignExpr(const AssignExpr& expr) = 0;
-    virtual R visitBinaryExpr(const BinaryExpr& expr) = 0;
-    virtual R visitCallExpr(const CallExpr& expr) = 0;
-    virtual R visitGroupingExpr(const GroupingExpr& expr) = 0;
-    virtual R visitLogicalExpr(const LogicalExpr& expr) = 0;
-    virtual R visitLiteralExpr(const LiteralExpr& expr) = 0;
-    virtual R visitUnaryExpr(const UnaryExpr& expr) = 0;
-    virtual R visitVarExpr(const VarExpr& expr) = 0;
+	virtual R VisitAssignExpr(const Assign& expr) = 0;
+    virtual R VisitBinaryExpr(const Binary& expr) = 0;
+    virtual R VisitCallExpr(const Call& expr) = 0;
+    virtual R VisitGroupingExpr(const Grouping& expr) = 0;
+    virtual R VisitLogicalExpr(const Logical& expr) = 0;
+    virtual R VisitLiteralExpr(const Literal& expr) = 0;
+    virtual R VisitUnaryExpr(const Unary& expr) = 0;
+    virtual R VisitVarExpr(const Var& expr) = 0;
 };

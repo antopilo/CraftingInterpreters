@@ -1,0 +1,15 @@
+Lox.dir/
+x64/
+CMakeFiles/
+.vs/
+ALL_BUILD.vcxproj
+ALL_BUILD.vcxproj.filters
+ALL_BUILD.vcxproj.user
+cmake_install.cmake
+CMakeCache.txt
+Lox.sln
+Lox.vcxproj
+Lox.vcxproj.filters
+Lox.vcxproj.user
+ZERO_CHECK.vcxproj
+ZERO_CHECK.vcxproj.filters
