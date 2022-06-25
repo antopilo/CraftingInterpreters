@@ -6,13 +6,16 @@
 #include <memory>
 #include <any>
 
+
+
 class Expr;
-typedef std::unique_ptr<Expr> ExprPtr;
+typedef std::shared_ptr<Expr> ExprPtr;
 class Expr
 {
 public:
-	virtual ~Expr() = default;
 	virtual std::any Accept(ExprVisitor<std::any>& visitor) const = 0;
+	Expr() = default;
+	virtual ~Expr() = default;
 };
 
 class Binary : public Expr
@@ -30,17 +33,19 @@ public:
 		_Right = std::move(right);
 	}
 
+	~Binary() override = default;
+
 	std::any Accept(ExprVisitor<std::any>& visitor) const override
 	{
 		return visitor.VisitBinaryExpr(*this);
 	}
 
-	const Expr& GetLeftExpr() const { return *_Left; }
-	const Expr& GetRightExpr() const { return *_Right; }
+	const ExprPtr GetLeftExpr() const { return _Left; }
+	const ExprPtr GetRightExpr() const { return _Right; }
 	const Token& GetOp() const { return _Op; }
 };
 
-class Grouping : Expr
+class Grouping : public Expr
 {
 private:
 	ExprPtr _Expression;
@@ -56,10 +61,10 @@ public:
 		return visitor.VisitGroupingExpr(*this);
 	}
 
-	const Expr& GetExpr() const { return *_Expression; }
+	const ExprPtr GetExpr() const { return _Expression; }
 };
 
-class Literal : Expr
+class Literal : public Expr
 {
 private:
 	std::any _Literal;
@@ -78,18 +83,20 @@ public:
 	const std::any& GetLiteral() const { return _Literal; }
 };
 
-class Unary : Expr
+class Unary : public Expr
 {
 private:
 	Token _Op;
 	ExprPtr _Right;
 
 public:
-	Unary(Token operation, ExprPtr right)
+	Unary(Token operation, ExprPtr&& right)
 	{
 		_Right = std::move(right);
 		_Op = operation;
 	}
+
+	~Unary() override = default;
 
 	std::any Accept(ExprVisitor<std::any>& visitor) const override
 	{
@@ -98,5 +105,5 @@ public:
 
 
 	const Token& GetOperator() const { return _Op; }
-	const Expr& GetRight() const { return *_Right; }
+	const ExprPtr GetRight() const { return _Right; }
 };

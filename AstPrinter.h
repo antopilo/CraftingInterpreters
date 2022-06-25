@@ -5,19 +5,19 @@
 #include <vector>
 #include <string>
 
-class AstPrinter : ExprVisitor<std::string>
+class AstPrinter : ExprVisitor <std::any>
 {
 private:
-    std::string Parenthesize(std::string name, std::vector<const Expr&> exprs)
+    std::string Parenthesize(std::string name, std::vector<ExprPtr> exprs)
     {
         std::string builder = "";
 
         builder += "(" + name;
 
-        for (auto& e : exprs)
+        for (auto e : exprs)
         {
             builder += " ";
-            builder += std::any_cast<std::string>(e.Accept(reinterpret_cast<ExprVisitor<std::any>&>(*this)));
+            builder += std::any_cast<std::string>(e->Accept(reinterpret_cast<ExprVisitor<std::any>&>(*this)));
         }
 
         builder += ")";
@@ -26,23 +26,23 @@ private:
     }
 public:
 
-    std::string VisitBinaryExpr(const Binary& expr) override
+    std::any VisitBinaryExpr(const Binary& expr) override
     {
-        std::vector<const Expr&> ptrs;
+        std::vector<ExprPtr> ptrs;
         ptrs.push_back(expr.GetLeftExpr());
         ptrs.push_back(expr.GetRightExpr());
 
         return Parenthesize(expr.GetOp().LiteralToString(), ptrs);
     }
 
-    std::string VisitGroupingExpr(const Grouping& expr) override
+    std::any VisitGroupingExpr(const Grouping& expr) override
     {
-        std::vector<const Expr&> ptrs;
+        std::vector<ExprPtr> ptrs;
         ptrs.push_back(expr.GetExpr());
         return Parenthesize("group", ptrs);
     }
 
-    std::string VisitLiteralExpr(const Literal& expr) override
+    std::any VisitLiteralExpr(const Literal& expr) override
     {
         std::any literal = expr.GetLiteral();
         if (!literal.has_value())
@@ -58,14 +58,14 @@ public:
         return std::to_string(std::any_cast<double>(literal));
     }
 
-    std::string VisitUnaryExpr(const Unary& expr) override
+    std::any VisitUnaryExpr(const Unary& expr) override
     {
-        std::vector<const Expr&> ptrs;
+        std::vector<ExprPtr> ptrs;
         ptrs.push_back(expr.GetRight());
         return Parenthesize(expr.GetOperator().LiteralToString(), ptrs);
     }
 
-    std::string Print(ExprPtr expr)
+    std::any Print(ExprPtr expr)
     {
         std::any re = expr->Accept(reinterpret_cast<ExprVisitor<std::any>&>(*this));
         return std::any_cast<std::string>(re);

@@ -6,6 +6,8 @@
 #include <string>
 
 #include "Expr/ExprVisitor.h"
+
+#include "AstPrinter.h"
 #include "Expr/Expr.h"
 
 void Run(const std::string& source)
@@ -61,20 +63,26 @@ void RunPrompt()
 
 
 #include <memory>
+#include "Memory.h"
+
 int main(int argc, char *argv[])
 {
-	//auto expression = std::make_unique<Binary>(
-	//	std::make_unique<Unary>(
-	//		Token(TokenType::MINUS, "-", "", 1),
-	//		std::make_unique<Literal>(123)),
-	//	Token(TokenType::STAR, "*", "", 1),
-	//	std::make_unique<Grouping>(
-	//		std::make_unique<Literal>(45.75))
-	//	);
+	auto expression = CreateRef<Binary>(
+		CreateRef<Unary>(
+			Token(TokenType::MINUS, "-", "", 1),
+			CreateRef<Literal>(123.0)),
+		Token(TokenType::STAR, "*", "", 1),
+		CreateRef<Grouping>(
+			CreateRef<Literal>(45.75))
+	);
 
-	//AstPrinter printer;
-	//std::unique_ptr<Expr> ptr = std::unique_ptr<Expr>(expression.get());
-	//std::cout << printer.Print(std::move(ptr));
+
+	ExprPtr op = CreateRef<Literal>(123);
+	auto token = Token(TokenType::MINUS, "-", "", 1);
+	auto left = CreateRef<Unary>(token, std::move(op));
+
+	AstPrinter printer;
+	std::cout << std::any_cast<std::string>(printer.Print(expression));
 
 	if (argc > 2)
 	{

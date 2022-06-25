@@ -31,6 +31,6 @@ std::string Token::LiteralToString() const
 	case TokenType::NUMBER:
 		return std::to_string(std::any_cast<double>(_literal));
 	default:
-		return "";
+		return _lexeme;
 	}
 }
