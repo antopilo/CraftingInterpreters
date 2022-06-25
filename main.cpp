@@ -9,16 +9,25 @@
 
 #include "AstPrinter.h"
 #include "Expr/Expr.h"
+#include "Parser.h"
 
 void Run(const std::string& source)
 {
 	Scanner scanner = Scanner(source);
 	std::vector<Token> tokens = scanner.ScanTokens();
 
-	for (const Token& token : tokens)
+	Parser parser = Parser(tokens);
+	ExprPtr expression = parser.Parse();
+
+	if (Lox::HadError)
 	{
-		std::cout << token.ToString() << std::endl;
+		return;
 	}
+
+	AstPrinter printer;
+	std::any result = printer.Print(expression);
+	std::string results = std::any_cast<std::string>(result);
+	std::cout << results << std::endl;
 }
 
 void RunFile(const std::string& file)
@@ -67,23 +76,6 @@ void RunPrompt()
 
 int main(int argc, char *argv[])
 {
-	auto expression = CreateRef<Binary>(
-		CreateRef<Unary>(
-			Token(TokenType::MINUS, "-", "", 1),
-			CreateRef<Literal>(123.0)),
-		Token(TokenType::STAR, "*", "", 1),
-		CreateRef<Grouping>(
-			CreateRef<Literal>(45.75))
-	);
-
-
-	ExprPtr op = CreateRef<Literal>(123);
-	auto token = Token(TokenType::MINUS, "-", "", 1);
-	auto left = CreateRef<Unary>(token, std::move(op));
-
-	AstPrinter printer;
-	std::cout << std::any_cast<std::string>(printer.Print(expression));
-
 	if (argc > 2)
 	{
 		std::cout << "Usage: lox [script]" << std::endl;

@@ -64,11 +64,16 @@ public:
 	const ExprPtr GetExpr() const { return _Expression; }
 };
 
+enum class LiteralType
+{
+	Double, String
+};
+
 class Literal : public Expr
 {
 private:
 	std::any _Literal;
-
+	LiteralType _Type;
 public:
 	Literal(std::any lit)
 	{
@@ -90,7 +95,7 @@ private:
 	ExprPtr _Right;
 
 public:
-	Unary(Token operation, ExprPtr&& right)
+	Unary(Token operation, ExprPtr right)
 	{
 		_Right = std::move(right);
 		_Op = operation;

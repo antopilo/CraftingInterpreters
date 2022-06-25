@@ -18,6 +18,11 @@ public:
 	Token() = default;
 	~Token() = default;
 
+	std::any GetLiteral() const { return _literal; }
+	TokenType GetType() const { return _type; }
+	uint32_t GetLine() const { return _line; }
+	std::string GetLexeme() const { return _lexeme; }
+
 	std::string ToString() const;
 	std::string LiteralToString() const;
 };

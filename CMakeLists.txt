@@ -5,9 +5,9 @@ project(Lox)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(SOURCES Lox.cpp main.cpp Scanner.cpp Token.cpp  )
+set(SOURCES Lox.cpp main.cpp Scanner.cpp Token.cpp  Parser.cpp)
 
 set(HEADERS Lox.h TokenType.h Scanner.h Token.h Expr/Expr.h
-Expr/ExprVisitor.h AstPrinter.h)
+Expr/ExprVisitor.h AstPrinter.h Parser.h)
 
 add_executable(Lox ${SOURCES} ${HEADERS})

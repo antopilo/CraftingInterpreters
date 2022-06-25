@@ -2,9 +2,13 @@
 #include <string>
 #include <iostream>
 
-namespace Lox
+#include "Token.h"
+
+class Lox
 {
-	static bool HadError = false;
-	void Report(uint32_t line, const std::string& where, const std::string& message);
-	void Error(uint32_t line, const std::string& message);
-}
+public:
+	static bool HadError;
+	static void Report(uint32_t line, const std::string& where, const std::string& message);
+	static void Error(uint32_t line, const std::string& message);
+	static void Error(Token type, const std::string& message);
+};

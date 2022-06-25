@@ -17,7 +17,13 @@ private:
         for (auto e : exprs)
         {
             builder += " ";
-            builder += std::any_cast<std::string>(e->Accept(reinterpret_cast<ExprVisitor<std::any>&>(*this)));
+            auto visitor = reinterpret_cast<ExprVisitor<std::any>*>(this);
+            std::any accept = e->Accept(*visitor);
+
+            if (accept.type() == typeid(builder))
+                builder += std::any_cast<std::string>(accept);
+            else
+                builder += std::to_string(std::any_cast<double>(accept));
         }
 
         builder += ")";
@@ -50,12 +56,14 @@ public:
             return "nil";
         }
 
-        if (literal.type().name() == "string")
+        std::string str;
+        auto ltrType = literal.type().name();
+        if (literal.type() == typeid(str))
         {
             return std::any_cast<std::string>(literal);
         }
             
-        return std::to_string(std::any_cast<double>(literal));
+        return std::any_cast<double>(literal);
     }
 
     std::any VisitUnaryExpr(const Unary& expr) override
@@ -68,6 +76,10 @@ public:
     std::any Print(ExprPtr expr)
     {
         std::any re = expr->Accept(reinterpret_cast<ExprVisitor<std::any>&>(*this));
-        return std::any_cast<std::string>(re);
+        std::string str;
+        if (re.type() == typeid(str))
+            return std::any_cast<std::string>(re);
+        
+        return std::to_string(std::any_cast<double>(re));
     }
 };
