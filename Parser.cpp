@@ -22,7 +22,7 @@ void Parser::Synchronize()
 		case TokenType::CLASS:
 		case TokenType::FOR:
 		case TokenType::FUN:
-		case TokenType:: IF:
+		case TokenType::IF:
 		case TokenType::PRINT:
 		case TokenType::RETURN:
 		case TokenType::VAR:
@@ -143,7 +143,7 @@ ExprPtr Parser::Primary()
 
 	if (Match({ TokenType::TRUE	 }))
 	{
-		return CreateRef<Literal>(false);
+		return CreateRef<Literal>(true);
 	}
 
 	if (Match({ TokenType::NIL }))

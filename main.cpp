@@ -27,11 +27,6 @@ void Run(const std::string& source)
 	}
 
 	interpreter.Interpret(expression);
-
-	AstPrinter printer;
-	std::any result = printer.Print(expression);
-	std::string results = std::any_cast<std::string>(result);
-	//std::cout << results << std::endl;
 }
 
 void RunFile(const std::string& file)

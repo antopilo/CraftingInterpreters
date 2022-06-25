@@ -62,6 +62,11 @@ public:
         {
             return std::any_cast<std::string>(literal);
         }
+
+        if (literal.type() == typeid(bool))
+        {
+            return std::any_cast<bool>(literal);
+        }
             
         return std::any_cast<double>(literal);
     }

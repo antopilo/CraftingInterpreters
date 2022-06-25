@@ -56,21 +56,33 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 	switch (expr.GetOp().GetType())
 	{
 		case TokenType::BANG_EQUAL:
+		{
 			return !IsEqual(left, right);
+		}
 		case TokenType::EQUAL_EQUAL:
+		{
 			return IsEqual(left, right);
+		}
 		case TokenType::GREATER:
+		{
 			CheckNumberOperands(expr.GetOp(), left, right);
 			return std::any_cast<double>(left) > std::any_cast<double>(right);
+		}
 		case TokenType::GREATER_EQUAL:
+		{
 			CheckNumberOperands(expr.GetOp(), left, right);
 			return std::any_cast<double>(left) >= std::any_cast<double>(right);
+		}
 		case TokenType::LESS:
+		{
 			CheckNumberOperands(expr.GetOp(), left, right);
 			return std::any_cast<double>(left) < std::any_cast<double>(right);
+		}
 		case TokenType::LESS_EQUAL:
+		{
 			CheckNumberOperands(expr.GetOp(), left, right);
 			return std::any_cast<double>(left) <= std::any_cast<double>(right);
+		}
 		case TokenType::MINUS:
 		{
 			CheckNumberOperands(expr.GetOp(), left, right);
@@ -83,9 +95,17 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 				return std::any_cast<double>(left) + std::any_cast<double>(right);
 			}
 
-			if (left.type() == typeid(std::string) && right.type() == typeid(std::string))
+			bool leftIsString = left.type() == typeid(std::string);
+			bool rightIsString = right.type() == typeid(std::string);
+			if (leftIsString && rightIsString)
 			{
 				return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
+			}
+			else
+			{
+				std::string leftString = leftIsString ? std::any_cast<std::string>(left) : Stringify(left);
+				std::string rightString = rightIsString ? std::any_cast<std::string>(right) : Stringify(right);
+				return leftString + rightString;
 			}
 
 			throw RuntimeError(expr.GetOp(), "Operands must be two numbers or two strings.");
@@ -93,7 +113,6 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 		case TokenType::SLASH:
 		{
 			CheckNumberOperands(expr.GetOp(), left, right);
-
 			double denomiator = std::any_cast<double>(right);
 			if (denomiator == 0.0)
 			{
@@ -127,6 +146,11 @@ std::string Interpreter::Stringify(std::any object)
 	if (object.type() == typeid(double))
 	{
 		double number = std::any_cast<double>(object);
+		if (std::trunc(number) == number) 
+		{
+			return std::to_string((int)number);
+		}
+
 		return std::to_string(number);
 	}
 
@@ -156,12 +180,31 @@ bool Interpreter::IsEqual(std::any left, std::any right)
 		return false;
 	}
 
+	bool leftIsBool = left.type() == typeid(bool);
+	bool leftIsDouble = left.type() == typeid(double);
 	if (left.type() != right.type()) 
 	{
+		bool rightIsBool = right.type() == typeid(bool);
+		bool rightIsDouble = right.type() == typeid(double);
+
+		if (leftIsBool && rightIsDouble)
+		{
+			bool leftB = std::any_cast<bool>(left);
+			double leftDouble = leftB ? 1.0 : 0.0;
+			return leftDouble == std::any_cast<double>(right);
+		}
+
+		if (leftIsDouble && rightIsBool)
+		{
+			bool rightb = std::any_cast<bool>(right);
+			double rightDouble = rightb ? 1.0 : 0.0;
+			return rightDouble == std::any_cast<double>(left);
+		}
+
 		return false;
 	}
 
-	if (left.type() == typeid(bool)) 
+	if (leftIsBool)
 	{
 		return std::any_cast<bool>(left) == std::any_cast<bool>(right);
 	}
@@ -171,7 +214,11 @@ bool Interpreter::IsEqual(std::any left, std::any right)
 		return std::any_cast<double>(left) == std::any_cast<double>(right);
 	}
 
-	if (left.type() == typeid(std::string)) {
+	// bool and doubles
+
+
+	if (left.type() == typeid(std::string)) 
+	{
 		return std::any_cast<std::string>(left) == std::any_cast<std::string>(right);
 	}
 
