@@ -1,19 +1,21 @@
 #include "Lox.h"
 #include "Scanner.h"
+#include "Expr/ExprVisitor.h"
+#include "AstPrinter.h"
+#include "Expr/Expr.h"
+#include "Parser.h"
+#include "Interpreter.h"
+
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
-#include "Expr/ExprVisitor.h"
-
-#include "AstPrinter.h"
-#include "Expr/Expr.h"
-#include "Parser.h"
-
 void Run(const std::string& source)
 {
 	Scanner scanner = Scanner(source);
+	Interpreter interpreter = Interpreter();
+
 	std::vector<Token> tokens = scanner.ScanTokens();
 
 	Parser parser = Parser(tokens);
@@ -24,10 +26,12 @@ void Run(const std::string& source)
 		return;
 	}
 
+	interpreter.Interpret(expression);
+
 	AstPrinter printer;
 	std::any result = printer.Print(expression);
 	std::string results = std::any_cast<std::string>(result);
-	std::cout << results << std::endl;
+	//std::cout << results << std::endl;
 }
 
 void RunFile(const std::string& file)
@@ -49,6 +53,12 @@ void RunFile(const std::string& file)
 	}
 
 	Run(fileContent);
+
+	if (Lox::HadError)
+		return;
+
+	if (Lox::HadRuntimeError)
+		return;
 }
 
 void RunPrompt()

@@ -1,6 +1,7 @@
 #include "Lox.h"
 
 bool Lox::HadError = false;
+bool Lox::HadRuntimeError = false;
 
 void Lox::Report(uint32_t line, const std::string& where, const std::string& message)
 {
@@ -23,4 +24,10 @@ void Lox::Error(Token token, const std::string& message)
 	{
 		Report(token.GetLine(), " at '" + token.GetLexeme() + "'", message);
 	}
+}
+
+void Lox::RuntimeErr(RuntimeError error)
+{
+	std::cout << error.what() << "\n[line " << error.GetToken().GetLine() << "]" << std::endl;
+	HadRuntimeError = true;
 }
