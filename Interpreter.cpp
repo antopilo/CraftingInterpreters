@@ -93,6 +93,13 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 		case TokenType::SLASH:
 		{
 			CheckNumberOperands(expr.GetOp(), left, right);
+
+			double denomiator = std::any_cast<double>(right);
+			if (denomiator == 0.0)
+			{
+				throw RuntimeError(expr.GetOp(), "Division by 0.");
+			}
+
 			return std::any_cast<double>(left) / std::any_cast<double>(right);
 		}
 		case TokenType::STAR:
