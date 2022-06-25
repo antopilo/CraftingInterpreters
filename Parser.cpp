@@ -190,7 +190,7 @@ ExprPtr Parser::Expression()
 ExprPtr Parser::Equality()
 {
 	ExprPtr expr = Comparison();
-	while (Match({ TokenType::BANG_EQUAL, TokenType::BANG_EQUAL }))
+	while (Match({ TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL }))
 	{
 		Token op = Previous();
 		ExprPtr right = Comparison();
