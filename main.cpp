@@ -5,6 +5,9 @@
 #include <fstream>
 #include <string>
 
+#include "Expr/ExprVisitor.h"
+#include "Expr/Expr.h"
+
 void Run(const std::string& source)
 {
 	Scanner scanner = Scanner(source);
@@ -56,8 +59,23 @@ void RunPrompt()
 	}
 }
 
+
+#include <memory>
 int main(int argc, char *argv[])
 {
+	//auto expression = std::make_unique<Binary>(
+	//	std::make_unique<Unary>(
+	//		Token(TokenType::MINUS, "-", "", 1),
+	//		std::make_unique<Literal>(123)),
+	//	Token(TokenType::STAR, "*", "", 1),
+	//	std::make_unique<Grouping>(
+	//		std::make_unique<Literal>(45.75))
+	//	);
+
+	//AstPrinter printer;
+	//std::unique_ptr<Expr> ptr = std::unique_ptr<Expr>(expression.get());
+	//std::cout << printer.Print(std::move(ptr));
+
 	if (argc > 2)
 	{
 		std::cout << "Usage: lox [script]" << std::endl;

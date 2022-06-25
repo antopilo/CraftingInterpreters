@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 class Assign;
 class Binary;
@@ -15,12 +16,8 @@ class ExprVisitor
 public:
 	~ExprVisitor() = default;
 
-	virtual R VisitAssignExpr(const Assign& expr) = 0;
     virtual R VisitBinaryExpr(const Binary& expr) = 0;
-    virtual R VisitCallExpr(const Call& expr) = 0;
     virtual R VisitGroupingExpr(const Grouping& expr) = 0;
-    virtual R VisitLogicalExpr(const Logical& expr) = 0;
     virtual R VisitLiteralExpr(const Literal& expr) = 0;
     virtual R VisitUnaryExpr(const Unary& expr) = 0;
-    virtual R VisitVarExpr(const Var& expr) = 0;
 };
