@@ -28,6 +28,7 @@ private:
 	StmtPtr Statement();
 	StmtPtr PrintStatement();
 	StmtPtr ExpressionStatement();
+	std::vector<StmtPtr> Block();
 
 	bool Match(std::vector<TokenType> types);
 	bool Check(TokenType type);

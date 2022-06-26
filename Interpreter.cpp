@@ -146,6 +146,12 @@ std::any Interpreter::VisitAssignExpr(const Assign& expr)
 	return value;
 }
 
+std::any Interpreter::VisitBlockStmt(const BlockStmt& expr)
+{
+	ExecuteBlock(expr.GetStatements(), CreateRef<Environment>(_environment));
+	return nullptr;
+}
+
 std::any Interpreter::VisitExpressionStmt(const ExpressionStmt& stmt)
 {
 	Evaluate(stmt.GetExpression());
@@ -169,6 +175,27 @@ std::any Interpreter::VisitVarStmt(const VarStmt& stmt)
 
 	_environment.Define(stmt.GetName().GetLexeme(), value);
 	return nullptr;
+}
+
+void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env)
+{
+	auto previous = env;
+
+	try
+	{
+		this->_environment = env;
+
+		for (auto s : statements)
+		{
+			Execute(s);
+		}
+	}
+	catch (RuntimeError error)
+	{
+
+	}
+
+	_environment = previous;
 }
 
 void Interpreter::Execute(StmtPtr stmt)

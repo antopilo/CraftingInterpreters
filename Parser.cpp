@@ -85,6 +85,10 @@ StmtPtr Parser::Statement()
 		return PrintStatement();
 	}
 
+	if (Match({ TokenType::LEFT_BRACE }))
+	{
+		return CreateRef<BlockStmt>(Block());
+	}
 
 	return ExpressionStatement();
 }
@@ -94,6 +98,19 @@ StmtPtr Parser::PrintStatement()
 	ExprPtr value = Expression();
 	Consume(TokenType::SEMICOLON, "Expect ';' after value.");
 	return CreateRef<PrintStmt>(value);
+}
+
+std::vector<StmtPtr> Parser::Block()
+{
+	std::vector<StmtPtr> statements = std::vector<StmtPtr>();
+
+	while (!Check(TokenType::RIGHT_BRACE) && !IsAtEnd())
+	{
+		statements.push_back(Declaration());
+	}
+
+	Consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+	return statements;
 }
 
 StmtPtr Parser::ExpressionStatement()
