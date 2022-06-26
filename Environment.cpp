@@ -53,3 +53,19 @@ std::any Environment::Get(Token token)
 
 	throw RuntimeError(token, "Undefined variable '" + lexeme + "'.");
 }
+
+std::any Environment::GetAt(int distance, std::string name)
+{
+	return Ancestor(distance)->GetValues()[name];
+}
+
+Ref<Environment> Environment::Ancestor(int distance)
+{
+	std::shared_ptr<Environment> env = std::shared_ptr<Environment>(this);
+	for (int i = 0; i < distance; i++)
+	{
+		env = env->_enclosing;
+	}
+
+	return env;
+}

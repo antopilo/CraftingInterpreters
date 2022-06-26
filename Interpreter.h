@@ -11,6 +11,7 @@
 #include "Token.h"
 
 #include <any>
+#include <map>
 
 class Interpreter : public ExprVisitor<std::any>, public StmtVisitor<std::any>
 {
@@ -18,6 +19,8 @@ private:
 	Ref<Environment> _globals;
 	Ref<Environment> _environment;
 	Environment* _globalEnvironmnent;
+
+	std::map<const Expr&, int> _locals;
 public:
 	Interpreter()
 	{
@@ -52,8 +55,9 @@ public:
 	Environment* GetGlobalEnvironment() const { return _globals.get(); }
 
 	void ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env);
-
+	void Resolve(const Expr& expr, int depth);
 private:
+	std::any LookUpVariable(Token name, const Expr& expr);
 	void Execute(StmtPtr stmt);
 	std::string Stringify(std::any object);
 	std::any Evaluate(ExprPtr expr);
@@ -61,5 +65,5 @@ private:
 	void CheckNumberOperand(Token op, std::any operand);
 	void CheckNumberOperands(Token op, std::any left, std::any right);
 	bool IsTruthy(std::any object);
-
+	
 };

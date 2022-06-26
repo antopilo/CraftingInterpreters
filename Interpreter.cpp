@@ -170,6 +170,17 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 std::any Interpreter::VisitVariableExpr(const Var& expr)
 {
 	return _environment->Get(expr.GetName());
+	//return LookUpVariable(expr.GetName(), expr);
+}
+
+std::any Interpreter::LookUpVariable(Token name, const Expr& expr)
+{
+	//if (_locals.find(expr) != _locals.end())
+	//{
+	//	return _globals->Get(name);
+	//}
+	//
+	//return _environment->GetAt(distance, name.GetLexeme())
 }
 
 std::any Interpreter::VisitLogicalExpr(const Logical& expr)
@@ -284,6 +295,11 @@ void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment>
 	}
 
 	_environment = previous;
+}
+
+void Interpreter::Resolve(const Expr& expr, int depth)
+{
+	//_locals[expr, depth];
 }
 
 void Interpreter::Execute(StmtPtr stmt)

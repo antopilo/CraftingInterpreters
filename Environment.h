@@ -22,4 +22,7 @@ public:
 	void Assign(Token name, std::any value);
 	void Define(const std::string& name, std::any value);
 	std::any Get(Token name);
+	std::any GetAt(int distance, std::string name);
+	Ref<Environment>Ancestor(int distance);
+	std::map<std::string, std::any>& GetValues() { return _values; }
 };
