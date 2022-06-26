@@ -96,3 +96,27 @@ public:
 
 	std::vector<StmtPtr> GetStatements() const { return _statements; }
 };
+
+class If : public Stmt
+{
+private:
+	ExprPtr _condition;
+	StmtPtr _thenBranch;
+	StmtPtr _elseBranch;
+
+public:
+	If(ExprPtr condition, StmtPtr then, StmtPtr elseB) : _condition(condition), _thenBranch(then), _elseBranch(elseB)
+	{
+
+	}
+
+	std::any Accept(StmtVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitIfStmt(*this);
+	}
+
+	auto GetCondition() const { return _condition; }
+	auto GetThenBranch() const { return _thenBranch; }
+	auto GetElseBranch() const { return _elseBranch; }
+	bool HasElseBranch() const { return _elseBranch != nullptr; }
+};

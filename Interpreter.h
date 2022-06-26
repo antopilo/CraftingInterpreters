@@ -23,14 +23,14 @@ public:
 	std::any VisitUnaryExpr(const Unary& expr) override;
 	std::any VisitBinaryExpr(const Binary& expr) override;
 	std::any VisitVariableExpr(const Var& expr) override;
+	std::any VisitLogicalExpr(const Logical& expr) override;
 
 	std::any VisitExpressionStmt(const ExpressionStmt& stmt) override;
 	std::any VisitPrintStmt(const PrintStmt& stmt) override;
 	std::any VisitVarStmt(const VarStmt& stmt) override;
 	std::any VisitAssignExpr(const Assign& expr) override;
 	std::any VisitBlockStmt(const BlockStmt& expr) override;
-
-
+	std::any VisitIfStmt(const If& expr) override;
 private:
 	void ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env);
 	void Execute(StmtPtr stmt);

@@ -22,6 +22,7 @@ public:
     virtual R VisitUnaryExpr(const Unary& expr) = 0;
     virtual R VisitVariableExpr(const Var& expr) = 0;
     virtual R VisitAssignExpr(const Assign& expr) = 0;
+    virtual R VisitLogicalExpr(const Logical& expr) = 0;
 };
 
 

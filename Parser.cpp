@@ -80,6 +80,10 @@ StmtPtr Parser::VarDeclaration()
 
 StmtPtr Parser::Statement()
 {
+	if (Match({ TokenType::IF }))
+	{
+		return IfStatement();
+	}
 	if (Match({ TokenType::PRINT }))
 	{
 		return PrintStatement();
@@ -91,6 +95,22 @@ StmtPtr Parser::Statement()
 	}
 
 	return ExpressionStatement();
+}
+
+StmtPtr Parser::IfStatement()
+{
+	Consume(TokenType::LEFT_PAREN, "Expect '(' after 'if'.");
+	ExprPtr condition = Expression();
+	Consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
+
+	StmtPtr thenBranch = Statement();
+	StmtPtr elseBranch = nullptr;
+	if (Match({ TokenType::ELSE }))
+	{
+		elseBranch = Statement();
+	}
+
+	return CreateRef<If>(condition, thenBranch, elseBranch);
 }
 
 StmtPtr Parser::PrintStatement()
@@ -269,8 +289,7 @@ ExprPtr Parser::Expression()
 
 ExprPtr Parser::Assignment()
 {
-	ExprPtr expr = Equality();
-
+	ExprPtr expr = Or();
 	if (Match({ TokenType::EQUAL }))
 	{
 		Token equals = Previous();
@@ -283,6 +302,34 @@ ExprPtr Parser::Assignment()
 		}
 
 		Error(equals, "Invalid assignment target.");
+	}
+
+	return expr;
+}
+
+ExprPtr Parser::Or()
+{
+	ExprPtr expr = And();
+
+	while (Match({ TokenType::OR }))
+	{
+		Token op = Previous();
+		ExprPtr right = Equality();
+		expr = CreateRef<Logical>(expr, op, right);
+	}
+
+	return expr;
+}
+
+ExprPtr Parser::And()
+{
+	ExprPtr expr = Equality();
+
+	while (Match({ TokenType::AND }))
+	{
+		Token op = Previous();
+		ExprPtr right = Equality();
+		expr = CreateRef<Logical>(expr, op, right);
 	}
 
 	return expr;

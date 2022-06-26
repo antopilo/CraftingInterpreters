@@ -139,6 +139,21 @@ std::any Interpreter::VisitVariableExpr(const Var& expr)
 	return _environment.Get(expr.GetName());
 }
 
+std::any Interpreter::VisitLogicalExpr(const Logical& expr)
+{
+	std::any left = Evaluate(expr.GetLeft());
+	if (expr.GetOperator().GetType() == TokenType::OR)
+	{
+		if (IsTruthy(left)) return left;
+	}
+	else
+	{
+		if (!IsTruthy(left)) return left;
+	}
+
+	return Evaluate(expr.GetRight());
+}
+
 std::any Interpreter::VisitAssignExpr(const Assign& expr)
 {
 	std::any value = Evaluate(expr.GetValue());
@@ -149,6 +164,19 @@ std::any Interpreter::VisitAssignExpr(const Assign& expr)
 std::any Interpreter::VisitBlockStmt(const BlockStmt& expr)
 {
 	ExecuteBlock(expr.GetStatements(), CreateRef<Environment>(_environment));
+	return nullptr;
+}
+
+std::any Interpreter::VisitIfStmt(const If& expr)
+{
+	if (IsTruthy(Evaluate(expr.GetCondition())))
+	{
+		Execute(expr.GetThenBranch());
+	}
+	else if (expr.HasElseBranch())
+	{
+		Execute(expr.GetElseBranch());
+	}
 	return nullptr;
 }
 

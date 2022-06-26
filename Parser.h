@@ -26,6 +26,7 @@ private:
 	StmtPtr Declaration();
 	StmtPtr VarDeclaration();
 	StmtPtr Statement();
+	StmtPtr IfStatement();
 	StmtPtr PrintStatement();
 	StmtPtr ExpressionStatement();
 	std::vector<StmtPtr> Block();
@@ -45,6 +46,8 @@ private:
 	ExprPtr Primary();
 	ExprPtr Expression();
 	ExprPtr Assignment();
+	ExprPtr Or();
+	ExprPtr And();
 	ExprPtr Equality();
 	ExprPtr Comparison();
 

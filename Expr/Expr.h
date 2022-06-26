@@ -155,3 +155,26 @@ public:
 	ExprPtr GetValue() const { return _value; }
 
 };
+
+class Logical : public Expr
+{
+private:
+	ExprPtr _left;
+	Token _operator;
+	ExprPtr _right;
+
+public:
+	Logical(ExprPtr left, Token op, ExprPtr right) : _left(left), _operator(op), _right(right)
+	{
+
+	}
+	
+	std::any Accept(ExprVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitLogicalExpr(*this);
+	}
+
+	auto GetLeft() const { return _left; }
+	auto GetRight() const { return _right; }
+	auto GetOperator() const { return _operator; }
+};
