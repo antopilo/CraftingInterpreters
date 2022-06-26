@@ -14,6 +14,7 @@ class Parser
 private:
 	std::vector<Token> _tokens;
 	uint32_t _current = 0;
+	const uint32_t MAX_ARGUMENTS = 255;
 
 public:
 	Parser(std::vector<Token> tokens);
@@ -26,10 +27,12 @@ private:
 	StmtPtr Declaration();
 	StmtPtr VarDeclaration();
 	StmtPtr Statement();
+	StmtPtr ForStatement();
 	StmtPtr IfStatement();
 	StmtPtr PrintStatement();
 	StmtPtr WhileStatement();
 	StmtPtr ExpressionStatement();
+	StmtPtr FunctionStatement(std::string kind);
 	std::vector<StmtPtr> Block();
 
 	bool Match(std::vector<TokenType> types);
@@ -51,5 +54,7 @@ private:
 	ExprPtr And();
 	ExprPtr Equality();
 	ExprPtr Comparison();
+	ExprPtr CallExpr();
+	ExprPtr FinishCall(ExprPtr callee);
 
 };

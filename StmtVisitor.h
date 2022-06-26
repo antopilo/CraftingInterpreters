@@ -6,6 +6,7 @@ class VarStmt;
 class BlockStmt;
 class If;
 class While;
+class Function;
 
 template<typename R>
 class StmtVisitor
@@ -19,4 +20,5 @@ public:
     virtual R VisitBlockStmt(const BlockStmt& stmt) = 0;
     virtual R VisitIfStmt(const If& stmt) = 0;
     virtual R VisitWhileStmt(const While& stmt) = 0;
+    virtual R VisitFunctionStmt(const Function& stmt) = 0;
 };

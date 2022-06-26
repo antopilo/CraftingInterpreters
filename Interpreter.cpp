@@ -1,9 +1,12 @@
+#include "Callable.h"
 #include "Interpreter.h"
 
 #include "RuntimeError.h"
 #include "Lox.h"
 
 #include <iostream>
+#include "LoxCallable.h"
+
 
 void Interpreter::Interpret(std::vector<StmtPtr> statements)
 {
@@ -28,6 +31,34 @@ std::any Interpreter::VisitLiteralExpr(const Literal& expr)
 std::any Interpreter::VisitGroupingExpr(const Grouping& expr)
 {
 	return Evaluate(expr.GetExpr());
+}
+
+std::any Interpreter::VisitCallExpr(const Call& expr)
+{
+	std::any callee = Evaluate(expr.GetCallee());
+
+	auto arguments = std::vector<std::any>();
+	for (auto& a : expr.GetArguments())
+	{
+		arguments.push_back(Evaluate(a));
+	}
+
+	if (callee.type() != typeid(Ref<Callable>))
+	{
+		throw RuntimeError(expr.GetParen(), "Can only call functions and classes.");
+	}
+
+	auto function = std::any_cast<Ref<Callable>>(callee);
+	if (arguments.size() != function->GetArity()) 
+	{
+		uint32_t arity = function->GetArity();
+		uint32_t argsCount = arguments.size();
+		throw RuntimeError(expr.GetParen(), 
+			"Expected " + std::to_string(arity)  +
+			"  arguments, but got " + std::to_string(argsCount) + ".");
+	}
+
+	return function->Call(*this, arguments);
 }
 
 std::any Interpreter::VisitUnaryExpr(const Unary& expr)
@@ -136,7 +167,7 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 
 std::any Interpreter::VisitVariableExpr(const Var& expr)
 {
-	return _environment.Get(expr.GetName());
+	return _environment->Get(expr.GetName());
 }
 
 std::any Interpreter::VisitLogicalExpr(const Logical& expr)
@@ -157,13 +188,13 @@ std::any Interpreter::VisitLogicalExpr(const Logical& expr)
 std::any Interpreter::VisitAssignExpr(const Assign& expr)
 {
 	std::any value = Evaluate(expr.GetValue());
-	_environment.Assign(expr.GetName(), value);
+	_environment->Assign(expr.GetName(), value);
 	return value;
 }
 
 std::any Interpreter::VisitBlockStmt(const BlockStmt& expr)
 {
-	ExecuteBlock(expr.GetStatements(), CreateRef<Environment>(_environment));
+	ExecuteBlock(expr.GetStatements(), *_environment);
 	return nullptr;
 }
 
@@ -195,6 +226,13 @@ std::any Interpreter::VisitExpressionStmt(const ExpressionStmt& stmt)
 	return nullptr;
 }
 
+std::any Interpreter::VisitFunctionStmt(const Function& stmt)
+{
+	auto function = CreateRef<LoxFunction>((Function*)&stmt);
+	_environment->Define(stmt.GetName().GetLexeme(), static_cast<Ref<Callable>>(function));
+	return nullptr;
+}
+
 std::any Interpreter::VisitPrintStmt(const PrintStmt& stmt)
 {
 	std::any value = Evaluate(stmt.GetExpression());
@@ -210,19 +248,19 @@ std::any Interpreter::VisitVarStmt(const VarStmt& stmt)
 		value = Evaluate(stmt.GetInitializer());
 	}
 
-	_environment.Define(stmt.GetName().GetLexeme(), value);
+	_environment->Define(stmt.GetName().GetLexeme(), value);
 	return nullptr;
 }
 
-void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env)
+void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Environment& env)
 {
-	auto previous = env;
+	auto& previous = env;
 
 	try
 	{
-		this->_environment = env;
+		this->_environment = &env;
 
-		for (auto s : statements)
+		for (auto& s : statements)
 		{
 			Execute(s);
 		}
@@ -232,7 +270,7 @@ void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment>
 
 	}
 
-	_environment = previous;
+	_environment = &previous;
 }
 
 void Interpreter::Execute(StmtPtr stmt)
@@ -250,6 +288,11 @@ std::string Interpreter::Stringify(std::any object)
 	if (object.type() == typeid(bool))
 	{
 		return std::any_cast<bool>(object) ? "true" : "false";
+	}
+
+	if (object.type() == typeid(Token))
+	{
+		return Stringify(std::any_cast<Token>(object).GetLiteral());
 	}
 
 	if (object.type() == typeid(double))

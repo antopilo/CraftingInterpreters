@@ -18,11 +18,13 @@ public:
 
     virtual R VisitBinaryExpr(const Binary& expr) = 0;
     virtual R VisitGroupingExpr(const Grouping& expr) = 0;
+    virtual R VisitCallExpr(const Call& expr) = 0;
     virtual R VisitLiteralExpr(const Literal& expr) = 0;
     virtual R VisitUnaryExpr(const Unary& expr) = 0;
     virtual R VisitVariableExpr(const Var& expr) = 0;
     virtual R VisitAssignExpr(const Assign& expr) = 0;
     virtual R VisitLogicalExpr(const Logical& expr) = 0;
+    
 };
 
 

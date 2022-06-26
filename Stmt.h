@@ -139,3 +139,29 @@ public:
 	auto GetCondition() const { return _condition; }
 	auto GetBody() const { return _body; }
 };
+
+class Function : public Stmt
+{
+private:
+	Token _name;
+	std::vector<Token> _params;
+	std::vector<StmtPtr> _body;
+
+public:
+	Function(Token name, std::vector<Token> params, std::vector<StmtPtr> body)
+	{
+		_name = name;
+		_params = params;
+		_body = body;
+	}
+
+	std::any Accept(StmtVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitFunctionStmt(*this);
+	}
+
+	auto GetName() const { return _name; }
+	auto GetParams() const { return _params; }
+	auto GetBody() const { return _body; }
+
+};

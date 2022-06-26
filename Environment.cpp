@@ -9,7 +9,13 @@ Environment::Environment() : _values(std::map<std::string, std::any>())
 Environment::Environment(Ref<Environment> enclosing)
 	: _values(std::map<std::string, std::any>())
 {
-	_enclosing = enclosing;
+	_enclosing = enclosing.get();
+}
+
+Environment::~Environment()
+{
+	if(_enclosing != nullptr)
+		delete _enclosing;
 }
 
 void Environment::Assign(Token name, std::any value)

@@ -50,6 +50,10 @@ StmtPtr Parser::Declaration()
 {
 	try
 	{
+		if (Match({ TokenType::FUN }))
+		{
+			return FunctionStatement("function");
+		}
 		if (Match({ TokenType::VAR }))
 		{
 			return VarDeclaration();
@@ -80,6 +84,10 @@ StmtPtr Parser::VarDeclaration()
 
 StmtPtr Parser::Statement()
 {
+	if (Match({ TokenType::FOR }))
+	{
+		return ForStatement();
+	}
 	if (Match({ TokenType::IF }))
 	{
 		return IfStatement();
@@ -98,6 +106,66 @@ StmtPtr Parser::Statement()
 	}
 
 	return ExpressionStatement();
+}
+
+StmtPtr Parser::ForStatement()
+{
+	Consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
+
+	StmtPtr init;
+	if (Match({ TokenType::SEMICOLON }))
+	{
+		init = nullptr;
+	}
+	else if(Match({ TokenType::VAR }))
+	{
+		init = VarDeclaration();
+	}
+	else
+	{
+		init = ExpressionStatement();
+	}
+
+	ExprPtr condition = nullptr;
+	if (!Check(TokenType::SEMICOLON))
+	{
+		condition = Expression();
+	}
+	Consume(TokenType::SEMICOLON, "Expect ';' after loop condition");
+
+	ExprPtr increment = nullptr;
+	if (!Check(TokenType::RIGHT_PAREN))
+	{
+		increment = Expression();
+	}
+	Consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
+
+	StmtPtr body = Statement();
+	if (increment != nullptr)
+	{
+		auto desugarized = std::vector<StmtPtr>();
+		desugarized.push_back(body);
+		desugarized.push_back(CreateRef<ExpressionStmt>(increment));
+
+		body = CreateRef<BlockStmt>(desugarized);
+	}
+
+	if (condition == nullptr)
+	{
+		condition = CreateRef<Literal>(true);
+	}
+
+	body = CreateRef<While>(condition, body);
+
+	if (init != nullptr)
+	{
+		auto desugarized = std::vector<StmtPtr>();
+		desugarized.push_back(init);
+		desugarized.push_back(body);
+		body = CreateRef<BlockStmt>(desugarized);
+	}
+
+	return body;
 }
 
 StmtPtr Parser::IfStatement()
@@ -150,6 +218,31 @@ StmtPtr Parser::ExpressionStatement()
 	ExprPtr value = Expression();
 	Consume(TokenType::SEMICOLON, "Expect ';' after value.");
 	return CreateRef<ExpressionStmt>(value);
+}
+
+StmtPtr Parser::FunctionStatement(std::string kind)
+{
+	Token name = Consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
+	Consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+	auto parameters = std::vector<Token>();
+	if (!Check({ TokenType::RIGHT_PAREN }))
+	{
+		do
+		{
+			if (std::size(parameters) >= MAX_ARGUMENTS)
+			{
+				Error(Peek(), "Can't have more than " + std::to_string(MAX_ARGUMENTS) + " parameters.");
+			}
+
+			parameters.push_back(Consume(TokenType::IDENTIFIER, "Expect parameter name."));
+
+		} while (Match({ TokenType::COMMA }));
+	}
+	Consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+
+	Consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");
+	auto body = Block();
+	return CreateRef<Function>(name, parameters, body);
 }
 
 bool Parser::Match(std::vector<TokenType> types)
@@ -238,9 +331,8 @@ ExprPtr Parser::Unary_()
 		return CreateRef<Unary>(op, right);
 	}
 
-	return Primary();
+	return CallExpr();
 }
-
 ExprPtr Parser::Primary()
 {
 	if (Match({TokenType::FALSE}))
@@ -372,4 +464,43 @@ ExprPtr Parser::Comparison()
 	}
 
 	return expr;
+}
+
+ExprPtr Parser::CallExpr()
+{
+	ExprPtr expr = Primary();
+
+	while (true)
+	{
+		if (Match({ TokenType::LEFT_PAREN }))
+		{
+			expr = FinishCall(expr);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return expr;
+}
+
+ExprPtr Parser::FinishCall(ExprPtr callee)
+{
+	auto arguments = std::vector<ExprPtr>();
+	if (!Check(TokenType::RIGHT_PAREN))
+	{
+		do
+		{
+			if (std::size(arguments) >= MAX_ARGUMENTS)
+			{
+				Error(Peek(), "Can't have more than " + std::to_string(MAX_ARGUMENTS) + " arguments.");
+			}
+			arguments.push_back(Expression());
+		} 
+		while (Match({ TokenType::COMMA }));
+	}
+
+	Token paren = Consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
+	return CreateRef<Call>(callee, paren, arguments);
 }

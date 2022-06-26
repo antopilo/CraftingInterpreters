@@ -10,6 +10,6 @@ Environment.cpp)
 
 set(HEADERS Lox.h TokenType.h Scanner.h Token.h Expr/Expr.h
 Expr/ExprVisitor.h AstPrinter.h Parser.h Interpreter.h RuntimeError.h 
-Stmt.h StmtVisitor.h Environment.h)
+Stmt.h StmtVisitor.h Environment.h Callable.h LoxCallable.h)
 
 add_executable(Lox ${SOURCES} ${HEADERS})

@@ -45,6 +45,31 @@ public:
 	const Token& GetOp() const { return _Op; }
 };
 
+class Call : public Expr
+{
+private:
+	ExprPtr _callee;
+	Token _paren;
+	std::vector<ExprPtr> _arguments;
+
+public:
+	Call(ExprPtr callee, Token paren, std::vector<ExprPtr> args)
+	{
+		_callee = callee;
+		_paren = paren;
+		_arguments = args;
+	}
+
+	std::any Accept(ExprVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitCallExpr(*this);
+	}
+
+	auto GetCallee() const { return _callee; }
+	auto GetParen() const { return _paren; }
+	auto GetArguments() const { return _arguments; }
+};
+
 class Grouping : public Expr
 {
 private:
