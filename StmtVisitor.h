@@ -2,6 +2,7 @@
 
 class ExpressionStmt;
 class PrintStmt;
+class ReturnStmt;
 class VarStmt;
 class BlockStmt;
 class If;
@@ -16,6 +17,7 @@ public:
 
     virtual R VisitExpressionStmt(const ExpressionStmt& stmt) = 0;
     virtual R VisitPrintStmt(const PrintStmt& stmt) = 0;
+    virtual R VisitReturnStmt(const ReturnStmt& stmt) = 0;
     virtual R VisitVarStmt(const VarStmt& stmt) = 0;
     virtual R VisitBlockStmt(const BlockStmt& stmt) = 0;
     virtual R VisitIfStmt(const If& stmt) = 0;

@@ -240,6 +240,17 @@ std::any Interpreter::VisitPrintStmt(const PrintStmt& stmt)
 	return nullptr;
 }
 
+std::any Interpreter::VisitReturnStmt(const ReturnStmt& stmt)
+{
+	std::any value = nullptr;
+	if (stmt.GetValue() != nullptr)
+	{
+		value = Evaluate(stmt.GetValue());
+	}
+
+	throw Return(value);
+}
+
 std::any Interpreter::VisitVarStmt(const VarStmt& stmt)
 {
 	std::any value = nullptr;

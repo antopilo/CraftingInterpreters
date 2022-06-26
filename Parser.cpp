@@ -96,6 +96,10 @@ StmtPtr Parser::Statement()
 	{
 		return PrintStatement();
 	}
+	if (Match({ TokenType::RETURN }))
+	{
+		return ReturnStatement();
+	}
 	if (Match({ TokenType::WHILE }))
 	{
 		return WhileStatement();
@@ -166,6 +170,19 @@ StmtPtr Parser::ForStatement()
 	}
 
 	return body;
+}
+
+StmtPtr Parser::ReturnStatement()
+{
+	Token keyword = Previous();
+	ExprPtr value = nullptr;
+	if (!Check(TokenType::SEMICOLON))
+	{
+		value = Expression();
+	}
+
+	Consume(TokenType::SEMICOLON, "Expect ';' after return value.");
+	return CreateRef<ReturnStmt>(keyword, value);
 }
 
 StmtPtr Parser::IfStatement()

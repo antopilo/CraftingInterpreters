@@ -45,6 +45,7 @@ public:
 	std::any VisitFunctionStmt(const Function& stmt) override;
 	std::any VisitIfStmt(const If& stmt) override;
 	std::any VisitPrintStmt(const PrintStmt& stmt) override;
+	std::any VisitReturnStmt(const ReturnStmt& stnt) override;
 	std::any VisitVarStmt(const VarStmt& stmt) override;
 	std::any VisitWhileStmt(const While& stmt) override;
 

@@ -36,8 +36,16 @@ public:
 			env->Define(lexem, arguments[i]);
 		}
 
+		try 
+		{
 
-		interpreter.ExecuteBlock(_declaration->GetBody(),*env );
+			interpreter.ExecuteBlock(_declaration->GetBody(), *env);
+		}
+		catch (Return returnValue)
+		{
+			return returnValue.GetValue();
+		}
+
 		return nullptr;
 	}
 

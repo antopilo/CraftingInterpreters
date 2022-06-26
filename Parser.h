@@ -28,6 +28,7 @@ private:
 	StmtPtr VarDeclaration();
 	StmtPtr Statement();
 	StmtPtr ForStatement();
+	StmtPtr ReturnStatement();
 	StmtPtr IfStatement();
 	StmtPtr PrintStatement();
 	StmtPtr WhileStatement();

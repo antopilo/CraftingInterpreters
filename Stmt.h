@@ -56,6 +56,28 @@ public:
 	ExprPtr GetExpression() const { return _expr; }
 };
 
+class ReturnStmt : public Stmt
+{
+private:
+	Token _keyword;
+	ExprPtr _value;
+
+public:
+	ReturnStmt(Token keyword, ExprPtr value)
+	{
+		_keyword = keyword;
+		_value = value;
+	}
+
+	std::any Accept(StmtVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitReturnStmt(*this);
+	}
+
+	auto GetKeyword() const { return _keyword; }
+	auto GetValue() const { return _value; }
+};
+
 class VarStmt : public Stmt
 {
 private:
