@@ -34,15 +34,44 @@ void Parser::Synchronize()
 	}
 }
 
-ExprPtr Parser::Parse()
+std::vector<StmtPtr> Parser::Parse()
 {
-	try {
-		return Expression();
+	std::vector<StmtPtr> statements = std::vector<StmtPtr>();
+	try 
+	{
+		while (!IsAtEnd())
+		{
+			statements.push_back(Statement());
+		}
+
 	}
 	catch (ParseError error)
+	{ }
+	return statements;
+}
+
+StmtPtr Parser::Statement()
+{
+	if (Match({ TokenType::PRINT }))
 	{
-		return nullptr;
+		return PrintStatement();
 	}
+
+	return ExpressionStatement();
+}
+
+StmtPtr Parser::PrintStatement()
+{
+	ExprPtr value = Expression();
+	Consume(TokenType::SEMICOLON, "Expect ';' after value.");
+	return CreateRef<PrintStmt>(value);
+}
+
+StmtPtr Parser::ExpressionStatement()
+{
+	ExprPtr value = Expression();
+	Consume(TokenType::SEMICOLON, "Expect ';' after value.");
+	return CreateRef<ExpressionStmt>(value);
 }
 
 bool Parser::Match(std::vector<TokenType> types)

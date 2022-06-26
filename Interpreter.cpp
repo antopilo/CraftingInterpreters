@@ -5,12 +5,15 @@
 
 #include <iostream>
 
-void Interpreter::Interpret(ExprPtr expression)
+void Interpreter::Interpret(std::vector<StmtPtr> statements)
 {
 	try
 	{
-		std::any value = Evaluate(expression);
-		std::cout << Stringify(value) << std::endl;
+		for (auto& statement : statements)
+		{
+			Execute(statement);
+		}
+		
 	} catch (RuntimeError error)
 	{
 		Lox::RuntimeErr(error);
@@ -129,6 +132,24 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 	}
 
 	return nullptr;
+}
+
+std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
+{
+	Evaluate(stmt.GetExpression());
+	return nullptr;
+}
+
+std::any Interpreter::visitPrintStmt(const PrintStmt& stmt)
+{
+	std::any value = Evaluate(stmt.GetExpression());
+	std::cout << Stringify(value) << std::endl;
+	return nullptr;
+}
+
+void Interpreter::Execute(StmtPtr stmt)
+{
+	stmt->Accept(*this);
 }
 
 std::string Interpreter::Stringify(std::any object)

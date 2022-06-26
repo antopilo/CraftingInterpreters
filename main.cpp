@@ -19,14 +19,15 @@ void Run(const std::string& source)
 	std::vector<Token> tokens = scanner.ScanTokens();
 
 	Parser parser = Parser(tokens);
-	ExprPtr expression = parser.Parse();
+
+	auto statements = parser.Parse();
 
 	if (Lox::HadError)
 	{
 		return;
 	}
 
-	interpreter.Interpret(expression);
+	interpreter.Interpret(statements);
 }
 
 void RunFile(const std::string& file)

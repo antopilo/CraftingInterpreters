@@ -1,6 +1,7 @@
 #pragma once
 #include "Token.h"
 #include "Expr/Expr.h"
+#include "Stmt.h"
 
 #include <exception>
 #include <vector>
@@ -18,9 +19,13 @@ public:
 	Parser(std::vector<Token> tokens);
 	~Parser() = default;
 
-	ExprPtr Parse();
+	std::vector<StmtPtr> Parse();
 private:
 	void Synchronize();
+
+	StmtPtr Statement();
+	StmtPtr PrintStatement();
+	StmtPtr ExpressionStatement();
 
 	bool Match(std::vector<TokenType> types);
 	bool Check(TokenType type);
@@ -38,4 +43,5 @@ private:
 	ExprPtr Expression();
 	ExprPtr Equality();
 	ExprPtr Comparison();
+
 };
