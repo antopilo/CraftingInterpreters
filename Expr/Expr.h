@@ -112,3 +112,23 @@ public:
 	const Token& GetOperator() const { return _Op; }
 	const ExprPtr GetRight() const { return _Right; }
 };
+
+
+class Var : public Expr
+{
+private:
+	Token _name;
+
+public:
+	Var(Token name)
+	{
+		_name = name;
+	}
+
+	std::any Accept(ExprVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitVariableExpr(*this);
+	}
+
+	Token GetName() const { return _name; }
+};

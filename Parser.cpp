@@ -37,17 +37,45 @@ void Parser::Synchronize()
 std::vector<StmtPtr> Parser::Parse()
 {
 	std::vector<StmtPtr> statements = std::vector<StmtPtr>();
-	try 
+
+	while (!IsAtEnd())
 	{
-		while (!IsAtEnd())
+		statements.push_back(Declaration());
+	}
+
+	return statements;
+}
+
+StmtPtr Parser::Declaration()
+{
+	try
+	{
+		if (Match({ TokenType::VAR }))
 		{
-			statements.push_back(Statement());
+			return VarDeclaration();
 		}
 
+		return Statement();
 	}
 	catch (ParseError error)
-	{ }
-	return statements;
+	{
+		Synchronize();
+		return nullptr;
+	}
+}
+
+StmtPtr Parser::VarDeclaration()
+{
+	Token name = Consume(TokenType::IDENTIFIER, "Expect variable name.");
+
+	ExprPtr initializer = nullptr;
+	if (Match({ TokenType::EQUAL }))
+	{
+		initializer = Expression();
+	}
+
+	Consume(TokenType::SEMICOLON, "Expect ',' after variable declaration.");
+	return CreateRef<VarStmt>(name, initializer);
 }
 
 StmtPtr Parser::Statement()
@@ -56,6 +84,7 @@ StmtPtr Parser::Statement()
 	{
 		return PrintStatement();
 	}
+
 
 	return ExpressionStatement();
 }
@@ -183,6 +212,11 @@ ExprPtr Parser::Primary()
 	if (Match({ TokenType::NUMBER, TokenType::STRING }))
 	{
 		return CreateRef<Literal>(Previous().GetLiteral());
+	}
+
+	if (Match({ TokenType::IDENTIFIER }))
+	{
+		return CreateRef<Var>(Previous());
 	}
 
 	if (Match({TokenType::LEFT_PAREN}))

@@ -1,6 +1,7 @@
 #pragma once
 #include <any>
 #include "Expr/Expr.h"
+#include "Token.h"
 
 #include "StmtVisitor.h"
 
@@ -28,7 +29,7 @@ public:
 
 	std::any Accept(StmtVisitor<std::any>& visitor) const override
 	{
-		return visitor.visitExpressionStmt(*this);
+		return visitor.VisitExpressionStmt(*this);
 	}
 
 	ExprPtr GetExpression() const
@@ -47,8 +48,30 @@ public:
 
 	std::any Accept(StmtVisitor<std::any>& visitor) const override
 	{
-		return visitor.visitPrintStmt(*this);
+		return visitor.VisitPrintStmt(*this);
 	}
 
 	ExprPtr GetExpression() const { return _expr; }
+};
+
+class VarStmt : public Stmt
+{
+private:
+	ExprPtr _initializer;
+	Token _name;
+
+public:
+	VarStmt(Token op, ExprPtr initializer)
+	{
+		_initializer = initializer;
+		_name = op;
+	}
+
+	std::any Accept(StmtVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitVarStmt(*this);
+	}
+
+	ExprPtr GetInitializer() const { return _initializer; }
+	Token GetName() const { return _name; }
 };

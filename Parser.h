@@ -23,6 +23,8 @@ public:
 private:
 	void Synchronize();
 
+	StmtPtr Declaration();
+	StmtPtr VarDeclaration();
 	StmtPtr Statement();
 	StmtPtr PrintStatement();
 	StmtPtr ExpressionStatement();

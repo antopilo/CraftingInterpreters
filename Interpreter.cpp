@@ -134,16 +134,33 @@ std::any Interpreter::VisitBinaryExpr(const Binary& expr)
 	return nullptr;
 }
 
-std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
+std::any Interpreter::VisitVariableExpr(const Var& expr)
+{
+	return _environment.Get(expr.GetName());
+}
+
+std::any Interpreter::VisitExpressionStmt(const ExpressionStmt& stmt)
 {
 	Evaluate(stmt.GetExpression());
 	return nullptr;
 }
 
-std::any Interpreter::visitPrintStmt(const PrintStmt& stmt)
+std::any Interpreter::VisitPrintStmt(const PrintStmt& stmt)
 {
 	std::any value = Evaluate(stmt.GetExpression());
 	std::cout << Stringify(value) << std::endl;
+	return nullptr;
+}
+
+std::any Interpreter::VisitVarStmt(const VarStmt& stmt)
+{
+	std::any value = nullptr;
+	if (stmt.GetInitializer() != nullptr)
+	{
+		value = Evaluate(stmt.GetInitializer());
+	}
+
+	_environment.Define(stmt.GetName().GetLexeme(), value);
 	return nullptr;
 }
 
