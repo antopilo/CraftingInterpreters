@@ -139,6 +139,13 @@ std::any Interpreter::VisitVariableExpr(const Var& expr)
 	return _environment.Get(expr.GetName());
 }
 
+std::any Interpreter::VisitAssignExpr(const Assign& expr)
+{
+	std::any value = Evaluate(expr.GetValue());
+	_environment.Define(expr.GetName().GetLexeme(), value);
+	return value;
+}
+
 std::any Interpreter::VisitExpressionStmt(const ExpressionStmt& stmt)
 {
 	Evaluate(stmt.GetExpression());

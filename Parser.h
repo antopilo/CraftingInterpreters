@@ -43,6 +43,7 @@ private:
 	ExprPtr Unary_();
 	ExprPtr Primary();
 	ExprPtr Expression();
+	ExprPtr Assignment();
 	ExprPtr Equality();
 	ExprPtr Comparison();
 

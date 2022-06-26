@@ -3,6 +3,17 @@
 
 Environment::Environment() : _values(std::map<std::string, std::any>()) {}
 
+void Environment::Assign(Token name, std::any value)
+{
+	if (_values.find(name.GetLexeme()) != _values.end())
+	{
+		_values[name.GetLexeme()] = value;
+		return;
+	}
+
+	throw RuntimeError(name, "Undefined variable '" + name.GetLexeme() + "'.");
+}
+
 void Environment::Define(const std::string& name, std::any value)
 {
 	_values[name] = value;

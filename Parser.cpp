@@ -247,7 +247,28 @@ ParseError Parser::Error(Token token, std::string message)
 
 ExprPtr Parser::Expression()
 {
-	return Equality();
+	return Assignment();
+}
+
+ExprPtr Parser::Assignment()
+{
+	ExprPtr expr = Equality();
+
+	if (Match({ TokenType::EQUAL }))
+	{
+		Token equals = Previous();
+		ExprPtr value = Assignment();
+
+		if (auto* varExpr = dynamic_cast<Var*>(expr.get()); varExpr)
+		{
+			Token name = varExpr->GetName();
+			return CreateRef<Assign>(name, value);
+		}
+
+		Error(equals, "Invalid assignment target.");
+	}
+
+	return expr;
 }
 
 ExprPtr Parser::Equality()

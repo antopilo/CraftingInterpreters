@@ -15,6 +15,7 @@ public:
 	Environment();
 	~Environment() = default;
 
+	void Assign(Token name, std::any value);
 	void Define(const std::string& name, std::any value);
 	std::any Get(Token name);
 };

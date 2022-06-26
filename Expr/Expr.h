@@ -132,3 +132,26 @@ public:
 
 	Token GetName() const { return _name; }
 };
+
+class Assign : public Expr
+{
+private:
+	Token _name;
+	ExprPtr _value;
+
+public:
+	Assign(Token name, ExprPtr value)
+	{
+		_name = name;
+		_value = value;
+	}
+
+	std::any Accept(ExprVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitAssignExpr(*this);
+	}
+
+	Token GetName() const { return _name; }
+	ExprPtr GetValue() const { return _value; }
+
+};
