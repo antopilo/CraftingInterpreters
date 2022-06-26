@@ -28,9 +28,10 @@ public:
 	std::any VisitExpressionStmt(const ExpressionStmt& stmt) override;
 	std::any VisitPrintStmt(const PrintStmt& stmt) override;
 	std::any VisitVarStmt(const VarStmt& stmt) override;
-	std::any VisitAssignExpr(const Assign& expr) override;
-	std::any VisitBlockStmt(const BlockStmt& expr) override;
-	std::any VisitIfStmt(const If& expr) override;
+	std::any VisitAssignExpr(const Assign& stmt) override;
+	std::any VisitBlockStmt(const BlockStmt& stmt) override;
+	std::any VisitIfStmt(const If& stmt) override;
+	std::any VisitWhileStmt(const While& stmt) override;
 private:
 	void ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env);
 	void Execute(StmtPtr stmt);

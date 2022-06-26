@@ -157,7 +157,7 @@ std::any Interpreter::VisitLogicalExpr(const Logical& expr)
 std::any Interpreter::VisitAssignExpr(const Assign& expr)
 {
 	std::any value = Evaluate(expr.GetValue());
-	_environment.Define(expr.GetName().GetLexeme(), value);
+	_environment.Assign(expr.GetName(), value);
 	return value;
 }
 
@@ -176,6 +176,15 @@ std::any Interpreter::VisitIfStmt(const If& expr)
 	else if (expr.HasElseBranch())
 	{
 		Execute(expr.GetElseBranch());
+	}
+	return nullptr;
+}
+
+std::any Interpreter::VisitWhileStmt(const While& stmt)
+{
+	while (IsTruthy(Evaluate(stmt.GetCondition())))
+	{
+		Execute(stmt.GetBody());
 	}
 	return nullptr;
 }

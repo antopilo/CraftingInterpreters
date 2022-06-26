@@ -28,6 +28,7 @@ private:
 	StmtPtr Statement();
 	StmtPtr IfStatement();
 	StmtPtr PrintStatement();
+	StmtPtr WhileStatement();
 	StmtPtr ExpressionStatement();
 	std::vector<StmtPtr> Block();
 

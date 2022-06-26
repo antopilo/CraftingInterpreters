@@ -88,7 +88,10 @@ StmtPtr Parser::Statement()
 	{
 		return PrintStatement();
 	}
-
+	if (Match({ TokenType::WHILE }))
+	{
+		return WhileStatement();
+	}
 	if (Match({ TokenType::LEFT_BRACE }))
 	{
 		return CreateRef<BlockStmt>(Block());
@@ -118,6 +121,15 @@ StmtPtr Parser::PrintStatement()
 	ExprPtr value = Expression();
 	Consume(TokenType::SEMICOLON, "Expect ';' after value.");
 	return CreateRef<PrintStmt>(value);
+}
+
+StmtPtr Parser::WhileStatement()
+{
+	Consume(TokenType::LEFT_PAREN, "Expect '(' after 'while'.");
+	ExprPtr condition = Expression();
+	Consume(TokenType::RIGHT_PAREN, "Expect ')' after while condition.");
+	StmtPtr body = Statement();
+	return CreateRef<While>(condition, body);
 }
 
 std::vector<StmtPtr> Parser::Block()

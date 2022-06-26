@@ -120,3 +120,22 @@ public:
 	auto GetElseBranch() const { return _elseBranch; }
 	bool HasElseBranch() const { return _elseBranch != nullptr; }
 };
+
+class While : public Stmt
+{
+private:
+	ExprPtr _condition;
+	StmtPtr _body;
+
+public:
+	While(ExprPtr cond, StmtPtr body) : _condition(cond), _body(body)
+	{}
+
+	std::any Accept(StmtVisitor<std::any>& visitor) const override
+	{
+		return visitor.VisitWhileStmt(*this);
+	}
+
+	auto GetCondition() const { return _condition; }
+	auto GetBody() const { return _body; }
+};
