@@ -13,21 +13,23 @@ class LoxFunction : public Callable
 {
 private:
 	Function* _declaration = nullptr;
+	Ref<Environment> _closure = nullptr;
 
 public:
-	LoxFunction(Function* declaration)
+	LoxFunction(Function* declaration, Ref<Environment> closure)
 	{
 		_declaration = declaration;
+		_closure = closure;
 	}
 
-	uint32_t GetArity() override
+	size_t GetArity() override
 	{
 		return _declaration->GetParams().size();
 	}
 
 	std::any Call(Interpreter& interpreter, std::vector<std::any> arguments) override
 	{
-		auto env = interpreter.GetGlobalEnvironment();
+		auto env = CreateRef<Environment>(_closure);
 		auto params = _declaration->GetParams();
 		for (uint32_t i = 0; i < std::size(params); i++)
 		{
@@ -38,8 +40,7 @@ public:
 
 		try 
 		{
-
-			interpreter.ExecuteBlock(_declaration->GetBody(), *env);
+			interpreter.ExecuteBlock(_declaration->GetBody(), env);
 		}
 		catch (Return returnValue)
 		{

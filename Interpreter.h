@@ -16,16 +16,16 @@ class Interpreter : public ExprVisitor<std::any>, public StmtVisitor<std::any>
 {
 private:
 	Ref<Environment> _globals;
-	Environment* _environment;
+	Ref<Environment> _environment;
 	Environment* _globalEnvironmnent;
 public:
 	Interpreter()
 	{
 		_globals = CreateRef<Environment>();
-		_globals->Define("clock", CreateRef<Clock>());
+		_globals->Define("clock", static_cast<Ref<Callable>>(CreateRef<Clock>()));
 		_globalEnvironmnent = _globals.get();
 
-		_environment = _globals.get();
+		_environment = _globals;
 	}
 	~Interpreter() = default;
 
@@ -51,7 +51,7 @@ public:
 
 	Environment* GetGlobalEnvironment() const { return _globals.get(); }
 
-	void ExecuteBlock(std::vector<StmtPtr> statements, Environment& env);
+	void ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env);
 
 private:
 	void Execute(StmtPtr stmt);

@@ -51,11 +51,13 @@ std::any Interpreter::VisitCallExpr(const Call& expr)
 	auto function = std::any_cast<Ref<Callable>>(callee);
 	if (arguments.size() != function->GetArity()) 
 	{
-		uint32_t arity = function->GetArity();
-		uint32_t argsCount = arguments.size();
-		throw RuntimeError(expr.GetParen(), 
-			"Expected " + std::to_string(arity)  +
-			"  arguments, but got " + std::to_string(argsCount) + ".");
+		size_t arity = function->GetArity();
+		size_t argsCount = arguments.size();
+
+		std::string message = "Expected " + std::to_string(arity);
+		message += "  arguments, but got " + std::to_string(argsCount) + ".";
+
+		throw RuntimeError(expr.GetParen(), message);
 	}
 
 	return function->Call(*this, arguments);
@@ -194,7 +196,7 @@ std::any Interpreter::VisitAssignExpr(const Assign& expr)
 
 std::any Interpreter::VisitBlockStmt(const BlockStmt& expr)
 {
-	ExecuteBlock(expr.GetStatements(), *_environment);
+	ExecuteBlock(expr.GetStatements(), _environment);
 	return nullptr;
 }
 
@@ -228,7 +230,7 @@ std::any Interpreter::VisitExpressionStmt(const ExpressionStmt& stmt)
 
 std::any Interpreter::VisitFunctionStmt(const Function& stmt)
 {
-	auto function = CreateRef<LoxFunction>((Function*)&stmt);
+	auto function = CreateRef<LoxFunction>((Function*)&stmt, _environment);
 	_environment->Define(stmt.GetName().GetLexeme(), static_cast<Ref<Callable>>(function));
 	return nullptr;
 }
@@ -263,13 +265,13 @@ std::any Interpreter::VisitVarStmt(const VarStmt& stmt)
 	return nullptr;
 }
 
-void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Environment& env)
+void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Ref<Environment> env)
 {
 	auto& previous = env;
 
 	try
 	{
-		this->_environment = &env;
+		this->_environment = env;
 
 		for (auto& s : statements)
 		{
@@ -281,7 +283,7 @@ void Interpreter::ExecuteBlock(std::vector<StmtPtr> statements, Environment& env
 
 	}
 
-	_environment = &previous;
+	_environment = previous;
 }
 
 void Interpreter::Execute(StmtPtr stmt)

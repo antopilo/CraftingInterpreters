@@ -12,7 +12,7 @@ public:
 	Callable() = default;
 	virtual ~Callable() = default;
 
-	virtual uint32_t GetArity() 
+	virtual size_t GetArity()
 	{ 
 		return 0; 
 	}
@@ -31,7 +31,7 @@ class Clock : public Callable
 {
 public:
 
-	uint32_t GetArity() override
+	size_t GetArity() override
 	{
 		return 0;
 	}

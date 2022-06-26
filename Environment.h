@@ -10,7 +10,7 @@
 class Environment
 {
 private:
-	Environment* _enclosing;
+	Ref<Environment> _enclosing;
 	std::map<std::string, std::any> _values;
 
 public:
